@@ -26,8 +26,9 @@ services:
 
     security_opt:
       - no-new-privileges:true
-    cap_drop:
-      - ALL
+    # Keep standard container capabilities: nginx -t needs to adjust
+    # ownership of /var/cache/nginx/client_temp (CAP_CHOWN).
+    # cap_drop: ALL prevents nginx startup with 'Operation not permitted'.
 
     logging:
       driver: json-file
