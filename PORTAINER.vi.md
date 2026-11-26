@@ -45,6 +45,19 @@ Cấu hình yêu cầu IP LAN có trên host, không được tự gõ IP của 
 
 Sau khi kiểm tra 18896 trống, nhấn **Deploy the stack**.
 
+## Đã sửa lỗi Nginx "chown(...client_temp...) Operation not permitted" ngày 26/11/2026
+
+Log Portainer có thể hiện:
+
+```
+nginx: [emerg] chown("/var/cache/nginx/client_temp", 101) failed (1: Operation not permitted)
+nginx: configuration file /etc/nginx/nginx.conf test failed
+```
+
+Nguyên nhân: Compose trước đó tự thêm `cap_drop: ALL`, tước `CAP_CHOWN` mà Nginx dùng khi chuẩn bị thư mục cache. Đã **gỡ riêng `cap_drop: ALL`**, giữ nguyên `security_opt: no-new-privileges:true`, số lượng container, image, cổng `18896:18896`, lệnh đổi port Nginx và healthcheck. Không yêu cầu `privileged: true`.
+
+**Sửa trên Portainer Stack đang có:** Stacks → excalidraw → Pull and redeploy. Xác nhận Containers → excalidraw → Logs không còn lỗi `chown` và hiển thị Healthy. Không cần xóa Stack. Nếu vẫn lỗi, xem Logs mới.
+
 ## 4. Kiểm tra hoạt động
 
 1. **Containers** → `excalidraw`: trạng thái `Running` → `Healthy`.
